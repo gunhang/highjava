@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="myspectrumboardre">
+
+
+<resultMap id="boardReSelect" class="spectrum.myspectrum.vo.SpectrumBoardVO" >
+	<result property="specbrdSrlnmbr"           column="SPECBRD_SRLNMBR" />
+	<result property="specbrdCn"                column="SPECBRD_LIKENUM" />
+	<result property="specbrdLikenum"           column="SPECBRD_PARENTSERIALNUM" />
+	<result property="specbrdParentserialnum"   column="MEMBER_ID" />
+	<result property="memberId"                 column="SPECBRD_DATE" />
+	<result property="specbrdDate"              column="SPECBRD_CN" />
+	<result property="memberNickname"           column="MEMBER_NICKNAME" />
+
+</resultMap>
+	
+
+
+
+
+<insert id="BoardRe" parameterClass="spectrum.myspectrum.vo.SpectrumBoardVO">
+	
+	
+	insert into spectrumboard
+				(
+				SPECBRD_SRLNMBR,
+				SPECBRD_LIKENUM,
+				SPECBRD_PARENTSERIALNUM,
+				MEMBER_ID,
+				SPECBRD_DATE,
+				SPECBRD_CN,
+				SPCTATC_ID
+				)values(
+				SPECTRUMBOARD_SEQ.NEXTVAL,       
+				'0',        
+				#specbrdParentserialnum#,
+				#memberId#,
+				sysdate,  
+				#specbrdCn#,
+				'-1'               
+				)
+				
+				
+				
+	
+</insert>
+
+
+<select id="boardReSelect" resultMap="boardReSelect" parameterClass="String">
+	select A.SPECBRD_SRLNMBR,
+		   A.SPECBRD_LIKENUM,
+		   A.SPECBRD_PARENTSERIALNUM,
+		   A.MEMBER_ID,
+		   A.SPECBRD_CN,
+		   A.SPECBRD_DATE,
+		   b.MEMBER_NICKNAME
+	  from spectrumboard A, member b
+	 where A.MEMBER_ID=B.MEMBER_ID
+	   and A.SPECBRD_PARENTSERIALNUM=#SPECBRD_SRLNMBR#
+	 order by TO_NUMBER(SPECBRD_SRLNMBR) desc	
+	      
+	     
+</select>	
+
+   
+<update id="boardReUpdate" parameterClass="spectrum.myspectrum.vo.SpectrumBoardVO">
+	update spectrumboard
+	   set SPECBRD_DATE=sysdate,
+	       SPECBRD_CN=#specbrdCn#
+	 where SPECBRD_SRLNMBR=#specbrdSrlnmbr# 
+</update>
+
+<delete id="boardReDelete" parameterClass="String">
+	DELETE FROM spectrumboard WHERE SPECBRD_SRLNMBR=#specbrdSrlnmbr#
+
+</delete>
+<select id ="parend" parameterClass="String" resultClass="String">
+	select  SPECBRD_PARENTSERIALNUM
+	  from spectrumboard
+	 where  SPECBRD_SRLNMBR=#specbrdSrlnmbr#
+
+</select>
+
+
+
+
+</sqlMap>

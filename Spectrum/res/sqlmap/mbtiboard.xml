@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mbtiboard">
+
+<resultMap id="mbtiboarddetailMap" class="spectrum.mbtiboard.vo.MbtiBoardVO">
+	<result property="mbtiboardPostnum"            column="MBTIBOARD_POSTNUM" />
+	<result property="mbtiboardClassificationcode" column="MBTIBOARD_CLASSIFICATIONCODE" />
+	<result property="memberId"                    column="MEMBER_ID" />
+	<result property="mbtiboardTitle"              column="MBTIBOARD_TITLE" />
+	<result property="mbtiboardDate"               column="MBTIBOARD_DATE" />
+	<result property="mbtiboardRecommendednumber"  column="MBTIBOARD_RECOMMENDEDNUMBER" />
+	<result property="mbtiboardNumberreported"     column="MBTIBOARD_NUMBERREPORTED" />
+	<result property="mbtiboardTypecode" 	       column="MBTIBOARD_TYPECODE" />
+	<result property="mbtiboardContent" 	       column="MBTIBOARD_CONTENT" />
+	<result property="memberNickname"              column="MEMBER_NICKNAME"/>
+	<result property="boardAttachmentId"              column="BOARD_ATTCHMENT_ID"/>
+	  
+	
+</resultMap>
+
+<resultMap id="mbtiboardlistMap" class="spectrum.mbtiboard.vo.MbtiBoardVO">
+	<result property="mbtiboardPostnum"            column="MBTIBOARD_POSTNUM" />
+	<result property="memberId"                    column="MEMBER_ID" />
+	<result property="mbtiboardTitle"              column="MBTIBOARD_TITLE" />
+	<result property="mbtiboardDate"            column="MBTIBOARD_DATE" />
+	<result property="mbtiboardTypecode" 	   column="MBTIBOARD_TYPECODE" />
+	<result property="memberNickname"          column="MEMBER_NICKNAME"/>
+	
+	
+</resultMap>
+<resultMap id="boardReSelect" class="spectrum.mbtiboard.vo.MbtiBoardVO">
+	<result property="mbtiboardPostnum"            column="MBTIBOARD_POSTNUM"             />
+	<result property="memberId"                    column="MEMBER_ID"  />
+	<result property="mbtiboardClassificationcode" column="MBTIBOARD_CLASSIFICATIONCODE"  />
+	<result property="mbtiboardContent"            column="MBTIBOARD_CONTENT"             />
+	<result property="mbtiboardDate" 	           column="MBTIBOARD_DATE"             />
+	<result property="memberNickname"              column="MEMBER_NICKNAME"/>
+</resultMap>              
+                               	                 
+<insert id="insertBoard" parameterClass="spectrum.mbtiboard.vo.MbtiBoardVO">
+	insert into mbtiboard
+	     (MBTIBOARD_POSTNUM,
+	     MBTIBOARD_CLASSIFICATIONCODE,
+	     MEMBER_ID,
+	     MBTIBOARD_TITLE,
+	     MBTIBOARD_DATE,
+	     MBTIBOARD_TYPECODE,
+	     MBTIBOARD_LEVEL,
+	     MBTIBOARD_CONTENT,
+	     BOARD_ATTCHMENT_ID
+	     )
+	     VALUES
+	     (TO_CHAR(mbtiboard_seq.nextval),
+	     #mbtiboardClassificationcode#,
+	     #memberId#,
+	     #mbtiboardTitle#,
+	     sysdate,
+	     #mbtiboardTypecode#,
+	     '0',
+	     #mbtiboardContent#,
+	     #boardAttachmentId#
+	     )
+</insert>
+
+<select id="boardList" resultMap="mbtiboardlistMap" >
+	select A.MBTIBOARD_POSTNUM,
+		   A.MBTIBOARD_TITLE,
+		   A.MBTIBOARD_DATE,
+		   A.MBTIBOARD_TYPECODE,
+		   A.MEMBER_ID,
+		   B.MEMBER_NICKNAME
+	 from (select MBTIBOARD_POSTNUM,
+				   MBTIBOARD_TITLE,
+				   MBTIBOARD_DATE,
+				   MBTIBOARD_TYPECODE,
+				   MEMBER_ID,
+				   MBTIBOARD_NUMBERREPORTED,
+				   MBTIBOARD_LEVEL,
+				   MBTIBOARD_CLASSIFICATIONCODE
+			  FROM MBTIBOARD 
+		     ORDER BY TO_NUMBER(MBTIBOARD_POSTNUM)) A,MEMBER B
+	 where A.MEMBER_ID=B.MEMBER_ID
+	   and A.MBTIBOARD_CLASSIFICATIONCODE=#mbtiboardClassificationcode#
+	   and A.MBTIBOARD_LEVEL='0'
+	   and A.MBTIBOARD_NUMBERREPORTED<![CDATA[  <]]>10
+	   <isEqual property="start" compareValue="1">
+		and TO_NUMBER(A.MBTIBOARD_POSTNUM) <![CDATA[  >]]>#end#
+	</isEqual>
+	 <isEqual property="start" compareValue="0">
+		and TO_NUMBER(A.MBTIBOARD_POSTNUM) <![CDATA[  <]]>#end#
+	</isEqual>
+	   
+	   and rownum <![CDATA[  <]]>10
+	   
+ 
+</select>
+<select id="mbtiboardDetail" resultMap="mbtiboarddetailMap" parameterClass="String">
+			
+	select 	A.MBTIBOARD_POSTNUM,    
+			A.MBTIBOARD_CLASSIFICATIONCODE,
+			A.MEMBER_ID,            
+			A.MBTIBOARD_TITLE,    
+			A.MBTIBOARD_DATE,         
+			A.MBTIBOARD_RECOMMENDEDNUMBER,
+			A.MBTIBOARD_NUMBERREPORTED,
+			A.MBTIBOARD_TYPECODE, 
+			A.MBTIBOARD_CONTENT,
+			B.MEMBER_NICKNAME,
+			A.BOARD_ATTCHMENT_ID
+      from mbtiboard A,MEMBER B
+     where A.MEMBER_ID=B.MEMBER_ID
+       AND MBTIBOARD_POSTNUM=#mbtiboardPostnum#	
+       		    
+
+</select>
+
+<update id="mbtiBoardUpdate" parameterClass="spectrum.mbtiboard.vo.MbtiBoardVO">
+	UPDATE mbtiboard 
+       SET MBTIBOARD_DATE = sysdate,
+           MBTIBOARD_TITLE = #mbtiboardTitle#,
+           MBTIBOARD_TYPECODE = #mbtiboardTypecode#,
+           MBTIBOARD_CONTENT = #mbtiboardContent#
+     WHERE MBTIBOARD_POSTNUM = #mbtiboardPostnum#
+
+</update>
+
+
+<delete id="mbtiBoardDelete" parameterClass="String">
+DELETE FROM mbtiboard WHERE MBTIBOARD_POSTNUM=#mbtiboardPostnum#
+</delete>
+
+<insert id="mbtiBoardRe" parameterClass="spectrum.mbtiboard.vo.MbtiBoardVO">
+	insert into mbtiboard
+	     (MBTIBOARD_POSTNUM,
+	     MBTIBOARD_CLASSIFICATIONCODE,
+	     MEMBER_ID,
+	     MBTIBOARD_TITLE,
+	     MBTIBOARD_DATE,
+	     MBTIBOARD_TYPECODE,
+	     MBTIBOARD_LEVEL,
+	     MBTIBOARD_CONTENT,
+	     MBTIBOARD_PARENTPOSTNUM
+	     )
+	     VALUES
+	     (TO_CHAR(mbtiboard_seq.nextval),
+	     #mbtiboardClassificationcode#,
+	     #memberId#,
+	     'BoardRe',
+	     sysdate,
+	     '0',
+	     #mbtiboardLevel#,
+	     #mbtiboardContent#,
+	     #mbtiboardParentpostnum#
+	     )
+</insert>
+
+
+<select id="mbtiBoardReSelect" resultMap="boardReSelect" parameterClass="String">
+	select A.MBTIBOARD_POSTNUM,
+		   A.MEMBER_ID,
+		   A.MBTIBOARD_CLASSIFICATIONCODE,
+		   A.MBTIBOARD_CONTENT,
+		   A.MBTIBOARD_DATE,
+		   B.MEMBER_NICKNAME
+	  FROM MBTIBOARD A,MEMBER B
+	 where A.MEMBER_ID=B.MEMBER_ID
+	   and MBTIBOARD_PARENTPOSTNUM=#boardNum#
+	     
+</select>	   
+
+<select id="mbtiCode" parameterClass="String" resultClass="String">
+	select MBTIBOARD_CLASSIFICATIONCODE
+	  from mbtiboard
+	 where MBTIBOARD_POSTNUM=#boardnum#
+</select>
+<update id="mbtiBoardReUpdate" parameterClass="spectrum.mbtiboard.vo.MbtiBoardVO">
+	update mbtiboard
+	   set mbtiboard_date=sysdate,
+	       mbtiboard_content=#mbtiboardContent#
+	 where MBTIBOARD_POSTNUM=#mbtiboardPostnum# 
+</update>
+<select id="mbtiparent" resultClass="String" parameterClass="String">
+	select MBTIBOARD_PARENTPOSTNUM
+	  from mbtiboard
+	 where MBTIBOARD_POSTNUM=#mbtiboardPostnum# 
+	     
+
+</select>
+<select id="mbtiBoardSerch" resultMap="mbtiboardlistMap" parameterClass="spectrum.mbtiboard.vo.MbtiBoardVO">
+	select A.MBTIBOARD_POSTNUM,
+		   A.MBTIBOARD_TITLE,
+		   A.MBTIBOARD_DATE,
+		   A.MBTIBOARD_TYPECODE,
+		   A.MEMBER_ID,
+		   B.MEMBER_NICKNAME
+	 from mbtiboard A,MEMBER B
+	 where A.MEMBER_ID=B.MEMBER_ID
+	   and MBTIBOARD_CLASSIFICATIONCODE=#mbtiboardClassificationcode#
+	   and MBTIBOARD_LEVEL='0'
+	   and MBTIBOARD_NUMBERREPORTED<![CDATA[  <]]>10
+	<!--말머리로 바꾸기 all -->
+	<isEqual property="searchKey" compareValue="code">
+		and A.MBTIBOARD_TYPECODE =#searchValue#
+	</isEqual>
+	<isEqual property="searchKey" compareValue="title">
+		and MBTIBOARD_TITLE LIKE '%'||#searchValue#||'%'
+	</isEqual>
+	<isEqual property="searchKey" compareValue="content">
+		and mbtiboard_content LIKE '%'||#searchValue#||'%'
+	</isEqual>
+	   
+
+</select>
+
+<select id="count" resultClass="int">
+select count(*)
+  from mbtiboard
+ where MBTIBOARD_NUMBERREPORTED<![CDATA[  <]]>10
+   and MBTIBOARD_CLASSIFICATIONCODE=#mbtiboardClassificationcode#
+   and MBTIBOARD_LEVEL='0'
+   
+
+</select>
+<delete id="recommenddelete" parameterClass="String">
+	delete from	RECOMMENDATION
+	  where MBTIBOARD_POSTNUM=#mbtiboardPostnum#
+	
+	
+
+
+</delete>
+<delete id="reportdelete" parameterClass="String">
+		delete from boardreport
+			where MBTIBOARD_POSTNUM=#mbtiboardPostnum#
+
+</delete>
+<delete id="redelete" parameterClass="String">
+	delete from mbtiboard
+			where MBTIBOARD_PARENTPOSTNUM=#mbtiboardPostnum#
+
+</delete>
+
+
+
+
+
+</sqlMap>			
+
+
+ 
+
+
+

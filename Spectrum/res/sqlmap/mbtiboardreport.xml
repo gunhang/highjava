@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mbtiboardreport">
+<select id="check"  parameterClass="spectrum.mbtiboard.report.vo.MbtiBoardReportVO" resultClass="String">
+	select member_id
+	  from boardreport
+	 where member_id=#memberId#
+	   and MBTIBOARD_POSTNUM=#mbtiboardPostnum#
+
+</select>
+<insert id="reportinsert" parameterClass="spectrum.mbtiboard.report.vo.MbtiBoardReportVO">
+	insert into boardReport
+	(BOARDREPORT_NUMBER,       
+	 ANONYMOUSBOARD_POSTNUM,   
+	 MBTIBOARD_POSTNUM,  
+	 BOARDREPORT_DATE,         
+	 BOARD_CLASSIFICATION_CODE,
+     MEMBER_ID,                
+	 BOARDREPORT_REASON       
+	)values(
+	 to_char(boardreport_seq.nextval),            
+	 '-1',      
+	 #mbtiboardPostnum#,           
+	 sysdate,            
+	 #boardClassificationCode#,   
+	 #memberId#,                
+	 #boardreportReason#          
+	)       
+</insert>
+<select id="count" parameterClass="String" resultClass="String">
+	select count(*)
+	  from boardreport
+     where MBTIBOARD_POSTNUM=#mbtiboardPostnum#
+
+</select>
+<update id="boardreportnum" parameterClass="spectrum.mbtiboard.vo.MbtiBoardVO">
+	update mbtiboard
+       set MBTIBOARD_NUMBERREPORTED=#mbtiboardNumberreported#  
+	 where MBTIBOARD_POSTNUM=#mbtiboardPostnum#
+</update>
+
+
+
+
+
+
+
+
+
+
+
+</sqlMap>			
+
+
+
+
+
+

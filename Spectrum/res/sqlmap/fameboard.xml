@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="fameBoard">
+<select id="fameBoard" resultClass="spectrum.board.fame.vo.BoardFameVO">
+select  
+       a.mbtiboard_postnum as mbtiboardPostnum,
+       B.recommend,
+       A.MBTIBOARD_CLASSIFICATIONCODE as mbtiboardClassificationcode,
+       A.MBTIBOARD_TITLE as mbtiboardTitle,
+       A.MBTIBOARD_TYPECODE as mbtiboardTypecode,
+       c.MEMBER_nickname as memberNickname,
+       TO_CHAR(A.MBTIBOARD_DATE,'YYYY-MM-DD HH:MM') AS dateboard
+  from mbtiboard A,(select MBTIBOARD_POSTNUM as postnum,
+                           mbtiboard_recommendednumber as recommend
+                      from mbtiboard        
+                    order by TO_NUMBER(recommend) desc)B,MEMBER c 
+ where b.postnum=a.mbtiboard_postnum
+   and a.member_id=c.member_id
+   and mbtiboard_level=0
+   and rownum<![CDATA[  <]]>16
+
+</select>
+
+
+
+</sqlMap>

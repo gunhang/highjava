@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="mbtiboardrecommend">
+<insert id="recommend" parameterClass="spectrum.mbtiboard.recommend.vo.MbtiBoardRecommendVO" >
+	insert into recommendation
+	(RECOMMENDATION_NUMBER,
+	 ANONYMOUSBOARD_POSTNUM,
+	 MBTIBOARD_POSTNUM,
+	 RECOMMENDATION_RECOMMENDYN,
+	 MEMBER_ID
+	 )values(
+	 TO_CHAR(recommend_seq.nextval),
+	 '-1',
+	 #mbtiboardPostnum#,
+	 'Y',
+	 #memberId#
+	 )
+
+</insert>
+
+<select id="recommendYn" resultClass="String" parameterClass="spectrum.mbtiboard.recommend.vo.MbtiBoardRecommendVO">
+	select RECOMMENDATION_RECOMMENDYN
+	  from recommendation
+	 where MBTIBOARD_POSTNUM=#mbtiboardPostnum#
+	   and MEMBER_ID=#memberId# 
+</select>
+<update id="recommendupdate" parameterClass="spectrum.mbtiboard.recommend.vo.MbtiBoardRecommendVO">
+	update recommendation
+	   set RECOMMENDATION_RECOMMENDYN=#recommendationRecommendyn#
+	 where MBTIBOARD_POSTNUM=#mbtiboardPostnum#
+	   and MEMBER_ID=#memberId# 
+</update>
+<update id="recommendnumber" parameterClass="spectrum.mbtiboard.vo.MbtiBoardVO">
+		update mbtiboard
+		   set MBTIBOARD_RECOMMENDEDNUMBER = #mbtiboardRecommendednumber#
+         where MBTIBOARD_POSTNUM=#mbtiboardPostnum# 
+</update>
+
+<select id="getrecommend" parameterClass="String" resultClass="String">
+		select MBTIBOARD_RECOMMENDEDNUMBER
+		  from mbtiboard
+		 where MBTIBOARD_POSTNUM=#mbtiboardPostnum#  
+		  
+</select>
+
+
+
+
+
+
+
+
+
+</sqlMap>			
+
+
+
+
+
+

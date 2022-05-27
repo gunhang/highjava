@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+         PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+         "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="boardatchFile">
+
+
+   <resultMap class="spectrum.board.atch.AtchFileVO" id="VOatchFile">
+   <result property="boardAttachmentId"			column="BOARD_ATTACHMENT_ID"		/>
+   <result property="boardatcdtlNum"			column="BOARDATCDTL_NUM"			/>
+   <result 	property="boardatcdtlPath"			column="BOARDATCDTL_PATH"		/>
+   <result 	property="boardatcdtlOriginalname"	column="BOARDATCDTL_ORIGINALNAME"/>
+   <result 	property="boardatcdtlType"			column="BOARDATCDTL_TYPE"		/>
+   <result 	property="boardatcdtlSize"			column="BOARDATCDTL_SIZE"		/>
+   <result 	property="boardatcdtlExtension"		column="BOARDATCDTL_EXTENSION"	/>
+   <result property="boardatcdtlContent"		column="BOARDATCDTL_CONTENT"		/>
+   
+   
+   
+   </resultMap>
+   
+
+   <select id="getAtchFileList" parameterClass="spectrum.board.atch.AtchFileVO" resultMap="VOatchFile">
+      select * from boardatcdtl
+      where BOARD_ATTACHMENT_ID = #boardAttachmentId#
+   </select>
+
+   <select id="getAtchFileDetail" parameterClass="spectrum.board.atch.AtchFileVO" resultMap="VOatchFile">
+      select * from boardatcdtl
+      where BOARD_ATTACHMENT_ID = #boardAttachmentId#
+        and BOARDATCDTL_NUM = #boardatcdtlNum#
+   </select>
+   
+   <insert id="insertAtchFile" parameterClass="spectrum.board.atch.AtchFileVO">
+      <selectKey keyProperty="boardAttachmentId" resultClass="String">
+         select BOARD_ATTACHMENT_ID.nextval from dual
+      </selectKey>
+   
+      insert into BOARD_ATTACHMENT
+      (
+      BOARD_ATTACHMENT_ID,
+      BOARD_ATTACHMENT_DATE,
+      BOARD_ATTACHMENT_USEYN
+      )
+      values 
+      (
+      #boardAttachmentId#,
+      sysdate,
+      'Y'
+      )
+   </insert>
+   
+   <insert id="insertAtchFileDetail" parameterClass="spectrum.board.atch.AtchFileVO">
+      insert into boardatcdtl
+      (
+       BOARD_ATTACHMENT_ID,
+       BOARDATCDTL_NUM,
+       BOARDATCDTL_PATH,
+       BOARDATCDTL_ORIGINALNAME,
+       BOARDATCDTL_TYPE,
+       BOARDATCDTL_SIZE,
+       BOARDATCDTL_EXTENSION,
+       BOARDATCDTL_CONTENT
+      )
+      values
+      (
+      #boardAttachmentId#,
+      (select nvl(max(to_number(BOARDATCDTL_NUM)), 0) +1
+         from boardatcdtl
+        where BOARD_ATTACHMENT_ID = #boardAttachmentId#),
+        #boardatcdtlPath#,
+        #boardatcdtlOriginalname#,
+        #boardatcdtlType#,
+        #boardatcdtlSize#,
+        #boardatcdtlExtension#,
+        #boardatcdtlContent#
+      
+      )
+   </insert>
+   
+
+
+
+
+</sqlMap>

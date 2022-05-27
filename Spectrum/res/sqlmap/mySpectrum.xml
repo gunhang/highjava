@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+         PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+         "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="member">
+
+<!--
+   이 영역에 SQL문에 맞는 태그를 사용하여 SQL문을 작성한다.
+   
+   사용할 수 있는 기본적인 태그들
+   <select> ~~~ </select>
+   <insert> ~~~ </insert>
+   <update> ~~~ </update>
+   <delete> ~~~ </delete>
+   
+   위 태그에서 사용되는 속성들
+   
+   1) id속성 : 해당 태그를 호출할 때 <sqlMap>태그의 namespace와 연결하여 사용하는 이름.
+   2) parameterClass속성 : SQL문에 사용될 데이터가 들어있는 객체를 지정한다.
+                     (보통 VO클래스, 자바의 자료형이름 등이 사용된다.)
+                     (typeAlias로 지정한 alias명을 사용할 수있다.)
+   3) resultClass속성 : select문을 실행한 결과를 담을 객체를 지정한다.
+                      (보통 VO클래스나 자바의 자료형이름을 사용한다.)
+   4) resultMap속성 : 결과 레코드 컬럼명과 VO객체의 property명이 다를 경우에 적절한 매핑을 위해 사용한다.
+    
+ -->
+<!--  <insert id="insertMember" parameterClass="spectrum.member.vo.MemberVO">
+    INSERT INTO mymember
+    (mem_id, mem_name, mem_tel, mem_addr, atch_file_id)
+    VALUES (#memId#, #memName#, #memTel#, #memAddr#, #atchFileId#)
+ </insert> -->
+ 
+  
+   <insert id="insertBoard" parameterClass="spectrum.myspectrum.vo.SpectrumBoardVO">
+    INSERT INTO SPECTRUMBOARD
+     (specbrd_srlnmbr, specbrd_likenum, member_id, specbrd_date, specbrd_cn, spctatc_id)
+    VALUES (SPECTRUMBOARD_SEQ.nextval, '0', #memberId#, sysdate, #specbrdCn#, #spctatcId#)
+ </insert>
+    
+<update id="updateMember" parameterClass="spectrum.member.vo.MemberVO">
+ UPDATE MEMBER    
+    SET member_password = #memberPassword#,
+        member_name = #memberName#,
+        member_phonenum = #memberPhonenum#,
+        member_birth = #memberBirth#,
+        member_zipcode=#memberZipcode#,
+        member_addr1 = #memberAddr1#,
+        member_addr2 = #memberAddr2#,
+        member_nickname = #memberNickname#,
+        member_mail = #memberMail#  
+   WHERE member_id = #memberId#     
+ </update> 
+ 
+ <update id="updateBoard" parameterClass="spectrum.myspectrum.vo.SpectrumBoardVO">
+ UPDATE SPECTRUMBOARD   
+    SET specbrd_cn = #specbrdCn#,
+        spctatc_id = #spctatcId# 
+   WHERE member_id = #memberId#     
+ </update> 
+
+ 
+  <delete id="deleteMember" parameterClass="String">
+ UPDATE MEMBER    
+    SET member_withdrawalyn = 'yes',
+        member_wthdrdate = sysdate
+   WHERE member_id = #memberId#     
+ </delete> 
+ 
+   <delete id="deleteBoard" parameterClass="String">
+  DELETE 
+  FROM SPECTRUMBOARD
+  WHERE SPECBRD_SRLNMBR = #specbrd_Srlnmbr#    
+ </delete> 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ <resultMap id="memMap" class="spectrum.member.vo.MemberVO">
+    <result property="memberId" column="member_id"/>
+    <result property="mbticode" column="mbticode"/>
+    <result property="memberName" column="member_name"/>
+    <result property="memberPassword" column="member_password"/>
+    <result property="memberBirth" column="member_birth"/>
+    <result property="memberRegno" column="member_regno"/>
+    <result property="memberPhonenum" column="member_phonenum"/>
+    <result property="memberZipcode" column="member_zipcode"/>
+    <result property="memberMail" column="member_mail"/>
+    <result property="memberNickname" column="member_nickname"/>
+    <result property="memberWithdrawalyn" column="member_withdrawalyn"/>
+    <result property="memberReportcount" column="member_reportcount"/>
+    <result property="memberHartnum" column="member_hartnum"/>
+    <result property="memberAddr1" column="member_addr1"/>
+    <result property="memberAddr2" column="member_addr2"/>
+    <result property="memberWthdrdate" column="member_wthdrdate"/>
+    <result property="memberProfileimagepath" column="member_profileimagepath"/>
+    <result property="memberStatusmessage" column="member_statusmessage"/>
+    <result property="memberSigndate" column="member_signdate"/>
+ </resultMap>
+ 
+ <resultMap id="boardMap" class="spectrum.myspectrum.vo.SpectrumBoardVO">
+     <result property="specbrdSrlnmbr" column="specbrd_srlnmbr"/>
+     <result property="specbrdLikenum" column="specbrd_likenum"/>
+     <result property="specbrdParentserialnum" column="specbrd_parentserialnum"/>
+     <result property="memberId" column="member_id"/>
+     <result property="specbrdDate" column="specbrd_date"/>
+     <result property="specbrdCn" column="specbrd_cn"/>
+     <result property="spctatcId" column="spctatc_id"/>
+  </resultMap>
+  
+  
+<!--    <resultMap id="mySpectrumListMap" class="spectrum.myspectrum.vo.mySpectrumListVO">
+    <result property="mbticode" column="mbticode"/>
+    <result property="memberNickname" column="member_nickname"/>
+    <result property="memberProfileimagepath" column="member_profileimagepath"/>
+    <result property="memberStatusmessage" column="member_statusmessage"/>
+    <result property="spctatcId" column="spctatc_id" nullValue="0"/>
+ </resultMap> -->
+   <resultMap id="mySpectrumListMap" class="spectrum.myspectrum.vo.mySpectrumListVO">
+    <result property="mbticode" column="mbticode"/>
+    <result property="memberNickname" column="member_nickname"/>
+    <result property="memberProfileimagepath" column="member_profileimagepath"/>
+    <result property="memberStatusmessage" column="member_statusmessage"/>
+    <result property="memberId" column="MEMBER_ID"/>
+    <result property="specbrdSrlnmbr" column="SPECBRD_SRLNMBR"/>
+    <result property="spctatcId" column="spctatc_id" nullValue="0"/>
+    <result property="specbrdCn" column="SPECBRD_CN" />
+ </resultMap>
+  
+  <select id="getAllBoardList" resultMap="mySpectrumListMap" parameterClass="String">
+  SELECT A.MBTICODE,
+         A.MEMBER_NICKNAME,
+         A.MEMBER_PROFILEIMAGEPATH,
+         A.MEMBER_STATUSMESSAGE,
+         A.MEMBER_ID,
+         B.SPCTATC_ID,
+         B.SPECBRD_SRLNMBR,
+         B.SPECBRD_CN
+    FROM MEMBER A
+  INNER JOIN SPECTRUMBOARD B
+     ON A.MEMBER_ID = B.MEMBER_ID
+  WHERE A.MEMBER_ID = #MEMBERID#   
+ </select> 
+ 
+
+
+
+<!--  <select id="getAllBoardList" resultMap="mySpectrumListMap">
+  SELECT A.MBTICODE,
+         A.MEMBER_NICKNAME,
+         A.MEMBER_PROFILEIMAGEPATH,
+         A.MEMBER_STATUSMESSAGE,
+         A.MEMBER_ID,
+         B.SPCTATC_ID
+    FROM MEMBER A
+  INNER JOIN SPECTRUMBOARD B
+     ON A.MEMBER_ID = B.MEMBER_ID
+ </select>  -->
+ 
+ 
+ <resultMap id="FriendMap" class="spectrum.myspectrum.vo.FriendVO">
+    <result property="friendNum" column="friend_num"/>
+    <result property="friendAppliedId" column="friend_applied_id"/>
+    <result property="friendRequestedId" column="friend_requested_id"/>
+    <result property="friendFriendyn" column="friend_friendyn"/>
+ </resultMap>
+ 
+  <select id="getAllFriendListY" parameterClass="String" resultMap="FriendMap">
+   SELECT *
+     FROM FRIEND
+    WHERE FRIEND_FRIENDYN = 'y'
+      AND FRIEND_APPLIED_ID = #memberId#
+ </select> 
+ 
+   <select id="getAllFriendListN" parameterClass="String" resultMap="FriendMap">
+   
+   SELECT *
+     FROM FRIEND
+    WHERE FRIEND_FRIENDYN = 'n'
+      AND FRIEND_APPLIED_ID = #memberId#
+ </select> 
+ 
+    <insert id="insertFriends" parameterClass="spectrum.myspectrum.vo.FriendVO">
+    INSERT INTO FRIEND
+      (FRIEND_NUM, FRIEND_APPLIED_ID, FRIEND_REQUESTED_ID, FRIEND_FRIENDYN)
+    VALUES (FRIEND_SEQ.nextval, #friendAppliedId#, #friendRequestedId#, 'n')
+ </insert>
+ 
+   <update id="updateFriends" parameterClass="spectrum.myspectrum.vo.FriendVO">
+     UPDATE FRIEND
+        SET FRIEND_FRIENDYN = 'y'
+      WHERE FRIEND_APPLIED_ID = #friendAppliedId#
+    and FRIEND_REQUESTED_ID=#friendRequestedId# 
+ </update>
+ 
+ 
+    <delete id="deleteFriends" parameterClass="spectrum.myspectrum.vo.FriendVO">
+  DELETE 
+  FROM FRIEND
+  WHERE FRIEND_APPLIED_ID = #friendAppliedId#
+    and FRIEND_REQUESTED_ID=#friendRequestedId#    
+ </delete> 
+ 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <select id="getMember" resultMap="memMap" parameterClass="String"> 
+   SELECT member_id,
+          mbticode,
+          member_name,
+          member_password,
+          member_birth,
+          member_regno,
+          member_phonenum,
+          member_zipcode,
+          member_mail,
+          member_nickname,
+          member_withdrawalyn,
+          member_reportcount,
+          member_hartnum,
+          member_addr1,
+          member_addr2,
+          member_wthdrdate,
+          member_profileimagepath,
+          member_statusmessage,
+          member_signdate
+         
+  FROM MEMBER
+  WHERE member_id = #memberId#
+ </select>
+ 
+  <select id="getBoard" resultMap="boardMap" parameterClass="String"> 
+ SELECT specbrd_srlnmbr,
+        specbrd_likenum,
+        specbrd_parentserialnum,
+        member_id,
+        specbrd_date,
+        spctatc_id,
+        specbrd_cn
+   FROM SPECTRUMBOARD
+  WHERE specbrd_srlnmbr = #specbrdSrlnmbr#
+   </select>
+
+<!-- 
+ <select id="checkMember" resultClass="int" parameterClass="String">
+  SELECT count(*) as cnt 
+    FROM MEMBER 
+  WHERE member_id = #memberId#
+ </select> -->
+
+ <!--  <select id="searchMember" resultMap="memMap" parameterClass="memVO">
+   SELECT * FROM MYMEMBER WHERE 1=1
+   <isNotEmpty property="memId">
+      and mem_id = #memId#
+   </isNotEmpty>
+   <isNotEmpty property="memName">
+      and mem_name = #memName#
+   </isNotEmpty>
+   <isNotEmpty property="memTel">
+      and mem_tel = #memTel#
+   </isNotEmpty>
+   <isNotEmpty property="memAddr">
+      and mem_addr like '%' || #memAddr# || '%'
+   </isNotEmpty>
+  </select>
+  -->
+  
+ <update id="updateChatHartnum" parameterClass="String">
+ UPDATE MEMBER
+   SET MEMBER_HARTNUM = (SELECT MEMBER_HARTNUM FROM MEMBER WHERE MEMBER_ID = #memberId#) - 1
+ WHERE MEMBER_ID = #memberId#
+ </update> 
+  
+</sqlMap>         
+
+

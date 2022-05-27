@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="myatc">
+	
+	<resultMap class="MyAtcVO" id="atchFileDetailMap">
+		<result property="myflofileatcId" column="MYFLOFILEATC_ID"/>
+		<result property="myflofileatcdtlNum" column="MYFLOFILEATCDTL_NUM"/>
+		<result property="myflofileatcdtlPath" column="MYFLOFILEATCDTL_PATH"/>
+		<result property="myflofileatcdtlStrefilenm" column="MYFLOFILEATCDTL_STREFILENM"/>
+		<result property="myflofileatcdtlOriginalname" column="MYFLOFILEATCDTL_ORIGINALNAME"/>
+		<result property="myflofileatcdtlExtension" column="MYFLOFILEATCDTL_EXTENSION"/>
+		<result property="myflofileatcdtlContent" column="MYFLOFILEATCDTL_CONTENT"/>
+		<result property="myflofileatcdtlSize" column="MYFLOFILEATCDTL_SIZE"/>		
+	</resultMap>
+	
+	
+	
+	<resultMap class="MyAtcVO" id="memMap">
+		<result property="memberId" column="MEMBER_ID"/>
+		
+				
+	</resultMap>
+
+	<select id="getAtchFileList" parameterClass="MyAtcVO" 
+	resultMap="atchFileDetailMap">
+		
+	select * from atch_file_detail
+	where MYFLOFILEATC_ID = #myflofileatcId#
+	
+	</select>
+	
+	
+	
+	<select id="getAtchFileDetail" parameterClass="MyAtcVO" 
+	resultMap="atchFileDetailMap">
+		
+	select * from MYFLOFILEATCDTL
+	where MYFLOFILEATC_ID = #myflofileatcId#
+		and MYFLOFILEATCDTL_NUM = #myflofileatcdtlNum#
+	
+	</select>
+	
+	<insert id="insertAtchFile" parameterClass="MyAtcVO">
+		
+		<selectKey keyProperty="myflofileatcId" resultClass="long">
+			select ATC_SEQ.nextval from dual
+		</selectKey>
+	
+		insert into MYFLOFILEATC
+		(
+		MYFLOFILEATC_ID,
+		MYFLOFILEATC_DATE,
+		MYFLOFILEATC_USEYN,
+		MEMBER_ID
+		)
+		values (
+			#myflofileatcId#,
+			sysdate,
+			'Y',
+			#memberId#
+		)
+		
+	
+	</insert>
+	
+	<insert id="insertAtchFileDetail" parameterClass="MyAtcVO">
+		insert into MYFLOFILEATCDTL
+		(
+	 MYFLOFILEATC_ID
+	,MYFLOFILEATCDTL_NUM
+	,MYFLOFILEATCDTL_PATH
+	,MYFLOFILEATCDTL_STREFILENM
+	,MYFLOFILEATCDTL_ORIGINALNAME
+	,MYFLOFILEATCDTL_EXTENSION
+	,MYFLOFILEATCDTL_CONTENT
+	,MYFLOFILEATCDTL_SIZE
+		)
+		values
+		(
+	#myflofileatcId#
+	,(select nvl(max(MYFLOFILEATCDTL_NUM), 0) + 1
+		from MYFLOFILEATCDTL
+		where MYFLOFILEATC_ID = #myflofileatcId#)
+	,#myflofileatcdtlPath#
+	,#myflofileatcdtlStrefilenm#
+	,#myflofileatcdtlOriginalname#
+	,#myflofileatcdtlNum#
+	,#myflofileatcdtlContent#
+	,#myflofileatcdtlSize#
+				)
+		
+	
+	</insert>
+	<select id="getAtcId" parameterClass="String" resultClass="String">
+
+        SELECT MAX(MYFLOFILEATC_ID)	
+		  FROM MYFLOFILEATC
+		 WHERE MEMBER_ID = #memberId#
+</select>
+	
+ <select id="getALLAtcDtlList" resultMap="atchFileDetailMap">
+          
+          select MYFLOFILEATC_ID,
+          		 MYFLOFILEATCDTL_NUM,
+          		 MYFLOFILEATCDTL_PATH,
+                MYFLOFILEATCDTL_ORIGINALNAME,
+                MYFLOFILEATCDTL_STREFILENM,
+                MYFLOFILEATCDTL_SIZE,
+                MYFLOFILEATCDTL_EXTENSION,
+                MYFLOFILEATCDTL_CONTENT
+                FROM MYFLOFILEATCDTL
+                WHERE MYFLOFILEATC_ID = #myflofileatcId#
+</select>
+
+
+<update id="updateAtcId" parameterClass="spectrum.myatc.vo.MyAtcVO">
+					 UPDATE MYFLOFILEATC 
+					 SET  MYFLOFILEATC_ID = #myflofileatcId#
+				     WHERE MEMBER_ID = #memberId#
+</update>
+
+</sqlMap>			
+
+
+
+
+
+

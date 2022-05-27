@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="mbtiResult">
+
+ <insert id="insertBasicMbtiResult" parameterClass="spectrum.mbtiResult.vo.MbtiResultVO">
+ 	INSERT INTO MBTI_RESULT
+ 	(MBTI_RESULT_UNIQUEKEY,
+	MBTICODE,
+	MEMBER_ID,
+	MBTI_RESULT_DATE,
+	MBTI_INDICATORSEI,
+	MBTI_INDICATORSSN,
+	MBTI_INDICATORSTF,
+	MBTI_INDICATORSJP,
+	MBTI_RESULT_LATESTYN,
+	MBTI_RESULT_EXTRAYN)
+ 	VALUES (
+ 	(TO_CHAR((SELECT COUNT(MBTI_RESULT_UNIQUEKEY)+1 
+    FROM MBTI_RESULT),'FM000000')),
+ 	#mbtiCode#, #memberId#, SYSDATE,
+ 	#mbtiIndicatorsEI#,
+ 	#mbtiIndicatorsSN#,
+ 	#mbtiIndicatorsTF#,
+ 	#mbtiIndicatorsJP#,
+ 	'Y','N')
+ </insert>
+ 
+ <insert id="insertExtraMbtiResult" parameterClass="spectrum.mbtiResult.vo.MbtiResultVO">
+ 	INSERT INTO MBTI_RESULT
+ 	(MBTI_RESULT_UNIQUEKEY,
+	MBTICODE,
+	MEMBER_ID,
+	MBTI_RESULT_DATE,
+	MBTI_INDICATORSEI,
+	MBTI_INDICATORSSN,
+	MBTI_INDICATORSTF,
+	MBTI_INDICATORSJP,
+	MBTI_RESULT_LATESTYN,
+	MBTI_RESULT_EXTRAYN)
+ 	VALUES (
+ 	(TO_CHAR((SELECT COUNT(MBTI_RESULT_UNIQUEKEY)+1 
+    FROM MBTI_RESULT),'FM000000')),
+ 	#mbtiCode#, #memberId#, SYSDATE,
+ 	#mbtiIndicatorsEI#,
+ 	#mbtiIndicatorsSN#,
+ 	#mbtiIndicatorsTF#,
+ 	#mbtiIndicatorsJP#,
+ 	'Y','Y')
+ </insert>
+ 
+ 
+ 
+ 
+ <update id="updateMbtiResultLatestN" parameterClass="String">
+ UPDATE MBTI_RESULT
+   SET MBTI_RESULT_LATESTYN = 'N'
+ WHERE MBTI_RESULT_UNIQUEKEY IN
+                                (SELECT B.MBTI_RESULT_UNIQUEKEY
+                                 FROM(SELECT A.*, ROWNUM AS RN
+                                    FROM(  SELECT *
+                                           FROM MBTI_RESULT
+                                           WHERE MEMBER_ID = #memberId#
+                                           ORDER BY MBTI_RESULT_DATE DESC) A) B
+                                    WHERE B.RN > 1)
+ </update>
+ 
+ <update id="updateMbtiResultLatestY" parameterClass="String">
+ UPDATE MBTI_RESULT
+   SET MBTI_RESULT_LATESTYN = 'Y'
+ WHERE MBTI_RESULT_UNIQUEKEY IN
+                                (SELECT B.MBTI_RESULT_UNIQUEKEY
+                                 FROM(SELECT A.*, ROWNUM AS RN
+                                    FROM(  SELECT *
+                                           FROM MBTI_RESULT
+                                           WHERE MEMBER_ID = #memberId#
+                                           ORDER BY MBTI_RESULT_DATE DESC) A) B
+                                    WHERE B.RN = 1)
+ </update>
+ 
+ <update id="updateMbtiCodeMember" parameterClass="spectrum.member.vo.MemberVO">
+UPDATE MEMBER
+   SET MBTICODE = #mbticode#
+ WHERE MEMBER_ID = #memberId#
+ </update>
+ 
+ 
+ 
+  <delete id="deleteMbtiResult" parameterClass="String">
+  DELETE 
+  FROM MBTI_RESULT 
+  WHERE MBTI_RESULT_UNIQUEKEY = #mbtiResultUniquekey#
+ </delete>
+ 
+  <resultMap id="mbtiResultMap" class="spectrum.mbtiResult.vo.MbtiResultVO">
+ 	<result property="mbtiResultUniquekey" column="MBTI_RESULT_UNIQUEKEY"/>
+ 	<result property="mbtiCode"           column="MBTICODE"/>
+ 	<result property="memberId"           column="MEMBER_ID"/>
+ 	<result property="mbtiResultDate"     column="MBTI_RESULT_DATE"/>
+ 	<result property="mbtiIndicatorsEI"   column="MBTI_INDICATORSEI"/>
+ 	<result property="mbtiIndicatorsSN"   column="MBTI_INDICATORSSN"/>
+ 	<result property="mbtiIndicatorsTF"   column="MBTI_INDICATORSTF"/>
+ 	<result property="mbtiIndicatorsJP"   column="MBTI_INDICATORSJP"/>
+ 	<result property="mbtiResultLatestYn" column="MBTI_RESULT_LATESTYN"/>
+ 	<result property="mbtiResultExtraYn"  column="MBTI_RESULT_EXTRAYN"/>
+ </resultMap>
+ 
+  <select id="getMbtiResultAll" resultMap="mbtiResultMap">
+  SELECT *
+  FROM MBTI_RESULT
+  ORDER BY 1
+ </select>
+ 
+ 
+  <select id="getMbtiResult" resultMap="mbtiResultMap" parameterClass="String">
+  SELECT *
+  FROM MBTI_RESULT
+  WHERE MEMBER_ID = #memberId# 
+    AND MBTI_RESULT_LATESTYN = 'Y'
+ </select>
+ 
+  <select id="getMbtiResultByUniquekey" resultMap="mbtiResultMap" parameterClass="String">
+  SELECT *
+  FROM MBTI_RESULT
+  WHERE MBTI_RESULT_UNIQUEKEY = #mbtiResultUniquekey# 
+ </select>
+ 
+ </sqlMap>

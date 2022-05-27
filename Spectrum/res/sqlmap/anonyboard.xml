@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="anonyboard">
+	
+	<resultMap class="spectrum.anonymouseboard.AnonymouseBoardVO" id="detail">
+	<result property="anonymouseboardPostnum"   	column="ANONYMOUSEBOARD_POSTNUM" />
+	<result property="boardClassificationCode" 		column="BOARD_CLASSIFICATION_CODE" />
+	<result property="memberId"                		column="MEMBER_ID" />
+	<result property="anonyboardParentpostnum"  	column="ANONYBOARD_PARENTPOSTNUM" />
+	<result property="anonymouseboardTitle"     	column="ANONYMOUSEBOARD_TITLE" />
+	<result property="anonymouseboardDate"      	column="ANONYMOUSEBOARD_DATE" />
+	<result property="anonymouseboardType"  		column="ANONYMOUSEBOARD_TYPE" />
+	<result property="anonymouseboardRecomandnum"   column="ANONYMOUSEBOARD_RECOMANDNUM" />
+	<result property="anonymouseboardReportcount"   column="ANONYMOUSEBOARD_REPORTCOUNT" />
+	<result property="anonymouseboardLevel"     	column="ANONYMOUSEBOARD_LEVEL" />
+	<result property="anonymouseboardContent"   	column="ANONYMOUSEBOARD_CONTENT" /> 
+	
+	</resultMap>
+	
+	<resultMap class="spectrum.anonymouseboard.AnonymouseBoardVO" id="list">
+	<result property="anonymouseboardPostnum"   	column="ANONYMOUSEBOARD_POSTNUM" />
+	<result property="memberId"                		column="MEMBER_ID" />
+	<result property="anonymouseboardTitle"     	column="ANONYMOUSEBOARD_TITLE" />
+	<result property="anonymouseboardDate"      	column="ANONYMOUSEBOARD_DATE" />
+	<result property="anonymouseboardType"  		column="ANONYMOUSEBOARD_TYPE" />
+	<result property="mbticode"  column="MBTICODE" /> 
+	
+	</resultMap>
+	
+	
+	<insert id="boardInsert" parameterClass="spectrum.anonymouseboard.AnonymouseBoardVO">
+		insert into anonymouseboard
+		(ANONYMOUSEBOARD_POSTNUM, 
+		 BOARD_CLASSIFICATION_CODE,
+		 MEMBER_ID, 
+		 ANONYBOARD_PARENTPOSTNUM,
+		 ANONYMOUSEBOARD_TITLE,  
+		 ANONYMOUSEBOARD_DATE,    
+		 ANONYMOUSEBOARD_TYPE,     
+		 ANONYMOUSEBOARD_RECOMANDNUM,
+		 ANONYMOUSEBOARD_REPORTCOUNT,
+		 ANONYMOUSEBOARD_LEVEL,   
+		ANONYMOUSEBOARD_CONTENT
+		)values(
+		anonyboard_seq.nextval,
+		'0', 	
+		#memberId#,                	
+		'-1',  
+		#anonymouseboardTitle#,
+		sysdate,      
+		#anonymouseboardType#,  	   
+		'0',
+		'0',
+		'0',     
+		#anonymouseboardContent#  
+		)
+		
+		
+	
+	
+	</insert>
+	
+	
+	
+	
+	<select id="boardDetail" resultMap="detail">
+	
+		select *
+		  from anonymouseboard
+		 where ANONYMOUSEBOARD_POSTNUM=#anonymouseboardPostnum#
+		
+	</select>
+	<select id="boardList" resultMap="list">
+		select A.ANONYMOUSEBOARD_POSTNUM,
+		       A.MEMBER_ID,
+			   A.ANONYMOUSEBOARD_TITLE,
+			   A.ANONYMOUSEBOARD_DATE,
+			   A.ANONYMOUSEBOARD_TYPE,
+			   B.MBTICODE
+		  from anonymouseboard A,member B, (select ANONYMOUSEBOARD_POSTNUM
+		  									  from anonymouseboard
+		  									 order by to_number(ANONYMOUSEBOARD_POSTNUM)) C
+		 where A.ANONYMOUSEBOARD_POSTNUM=C.ANONYMOUSEBOARD_POSTNUM
+		   and A.MEMBER_ID=B.MEMBER_ID
+		   and ANONYMOUSEBOARD_REPORTCOUNT <![CDATA[  <]]>10
+		  	   	
+	</select>
+	
+	<delete id="boardDelete">
+		delete from anonymouseboard 
+		      where ANONYMOUSEBOARD_POSTNUM=#anonymouseboardPostnum#
+	
+	</delete>
+	<update id="boardUpdate" parameterClass="spectrum.anonymouseboard.AnonymouseBoardVO">
+		update anonymouseboard
+		   set ANONYMOUSEBOARD_TITLE=#anonymouseboardTitle#,
+		   	   ANONYMOUSEBOARD_DATE=sysdate,	
+		   	   ANONYMOUSEBOARD_CONTENT=#anonymouseboardContent#
+		 where ANONYMOUSEBOARD_POSTNUM=#anonymouseboardPostnum#  	   
+		  
+	
+	</update>
+	
+	
+	
+	
+	
+	
+	
+
+
+</sqlMap>

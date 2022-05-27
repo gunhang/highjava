@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="memberspec">
+
+	
+	<insert id="insertRank" parameterClass="spectrum.member.vo.MemberVO">
+		
+		INSERT INTO RANK
+		(member_id,rank_memrank)
+		VALUES
+		(#memberId#,'WHITE')
+
+	</insert>
+
+
+	<insert id="insertMember" parameterClass="spectrum.member.vo.MemberVO">
+
+		INSERT INTO MEMBER
+		(member_id,mbticode,member_name,member_password,member_birth,member_regno,
+		member_phonenum,member_zipcode,member_mail,member_nickname,
+		member_withdrawalyn,member_reportcount,member_hartnum,member_addr1,
+		member_addr2,member_wthdrdate,member_profileimagepath,
+		member_statusmessage,member_signdate)
+
+		VALUES(#memberId#,'0',#memberName#,#memberPassword#,#memberBirth#,#memberRegno#,#memberPhonenum#
+		,#memberZipcode#,#memberMail#,#memberNickname#,'N','0'
+		,'5',#memberAddr1#,#memberAddr2#,null,null
+		,null,sysdate)
+	</insert>
+
+
+
+	<select id="checkId" parameterClass="String" resultClass="String">
+		select member_id from member
+		where member_id=#userId#
+	</select>
+
+	<select id="checkMail" parameterClass="String" resultClass="String">
+		select member_mail from member
+		where member_mail=#userMail#
+	</select>
+	
+		<select id="checkNickName" parameterClass="String" resultClass="String">
+		select member_nickname from member
+		where member_nickname=#memberNickname#
+	</select>
+
+	<select id="joinMember" parameterClass="spectrum.member.vo.MemberVO" resultClass="String">
+		select member_id
+		from member
+		where member_id=#memberId#
+		and member_password=#memberPassword#
+	</select>
+	
+	
+	<insert id="insertFirstPayment" parameterClass="spectrum.payment.vo.PaymentVO">
+	insert into payment
+	(member_id,payment_number,payment_date,payment_amount,payment_refundyn,payment_totalamount)
+	values
+	(#memberId#,payment_seq.nextval,sysdate,#paymentAmount#,'N',#paymentAmount#)
+	</insert>
+
+
+	<select id="checkPayment" parameterClass="spectrum.payment.vo.PaymentVO" resultClass="int">
+		select count(*)
+		from payment
+		where member_id=#memberId#
+	</select>
+
+	<insert id="insertPayment"  parameterClass="spectrum.payment.vo.PaymentVO">
+		
+	insert into payment 
+	(member_id,payment_number,payment_date,payment_amount,payment_refundyn,payment_totalamount)
+	
+	
+	VALUES(#memberId#,payment_seq.nextval,sysdate,#paymentAmount#,'N',to_char(to_number((select A.PAYMENT_TOTALAMOUNT
+                                                                                   from payment A  ,  (select payment_number,
+                                                                                                              MEMBER_ID
+                                                                                                          from payment
+                                                                                                         order by to_number(payment_number)  desc) B
+                                                                                  WHERE A.PAYMENT_NUMBER=B.payment_number
+                                                                                    and B.MEMBER_ID=#memberId#
+                                                                                    and rownum =1))+#paymentAmount#))
+	
+	
+	</insert>
+
+
+
+	<select id="findIdMember"  parameterClass="spectrum.member.vo.MemberVO" resultClass="String">
+	select member_id
+    from member
+   where member_regno=#memberRegno#
+   and member_name=#memberName#
+	</select>
+	
+	<update id="updateHeart" parameterClass="spectrum.payment.vo.PaymentVO">
+		update member
+		set member_hartnum=member_hartnum+(#paymentAmount#/500)
+		where member_id=#memberId# 
+		
+	</update>
+	
+	<select id="checkMember" parameterClass="String" resultClass="int">
+	   select count(*)
+		from member
+		where member_id=#memId#
+	</select>
+	
+	<select id="getMail" parameterClass="String" resultClass="String">
+	   select member_mail
+        from member
+        where member_id=#memId#
+     </select>
+	
+	<update id="updatePassword" parameterClass="spectrum.member.vo.MemberVO">  
+		update member
+	       set member_password=#memberPassword#
+	     where member_id=#memberId# 
+	</update>
+	
+
+
+</sqlMap>

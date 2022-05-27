@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="mbtiSurvey">
+
+ <insert id="insertMbtiSurvey" parameterClass="spectrum.mbtiSurvey.vo.MbtiSurveyVO">
+ 	INSERT INTO MBTI_SURVEY
+ 	(MBTI_SURVEY_NUMBER, 
+ 	MBTI_SURVEY_CONTENT,
+ 	MBTI_SURVEY_TYPE,
+ 	MBTI_SURVEY_EXTRAYN)
+ 	VALUES (
+ 	(TO_CHAR((SELECT COUNT(MBTI_SURVEY_NUMBER)+1 
+    FROM MBTI_SURVEY),'FM000000'))
+ 	, #mbtiSurveyContent#, #mbtiSurveyType#, #mbtiSurveyExtraYn#)
+ </insert>
+ 
+ 
+ <update id="updateMbtiSurvey" parameterClass="spectrum.mbtiSurvey.vo.MbtiSurveyVO">
+ UPDATE MBTI_SURVEY    
+    SET MBTI_SURVEY_NUMBER = #mbtiSurveyNumber#,   
+    	MBTI_SURVEY_CONTENT = #mbtiSurveyContent#,
+        MBTI_SURVEY_TYPE = #mbtiSurveyType#,
+        MBTI_SURVEY_EXTRAYN = #mbtiSurveyExtraYn#
+  WHERE MBTI_SURVEY_NUMBER = #mbtiSurveyNumber#     
+ </update>
+ 
+  <delete id="deleteMbtiSurvey" parameterClass="String">
+  DELETE 
+  FROM MBTI_SURVEY 
+  WHERE MBTI_SURVEY_NUMBER = #mbtiSurveyNumber#
+ </delete>
+ 
+  <resultMap id="mbtiSurveyMap" class="spectrum.mbtiSurvey.vo.MbtiSurveyVO">
+ 	<result property="mbtiSurveyNumber" column="MBTI_SURVEY_NUMBER"/>
+ 	<result property="mbtiSurveyContent" column="MBTI_SURVEY_CONTENT"/>
+ 	<result property="mbtiSurveyType" column="MBTI_SURVEY_TYPE"/>
+ 	<result property="mbtiSurveyExtraYn" column="MBTI_SURVEY_EXTRAYN"/>
+ </resultMap>
+ 
+  <select id="getMbtiSurveyAll" resultMap="mbtiSurveyMap">
+  SELECT MBTI_SURVEY_NUMBER, 
+		 MBTI_SURVEY_CONTENT, 
+		 MBTI_SURVEY_TYPE, 
+		 MBTI_SURVEY_EXTRAYN
+  FROM MBTI_SURVEY
+ </select>
+ 
+ <select id="getBasicMbtiSurveyList" resultMap="mbtiSurveyMap">
+  SELECT MBTI_SURVEY_NUMBER, 
+		 MBTI_SURVEY_CONTENT, 
+		 MBTI_SURVEY_TYPE, 
+		 MBTI_SURVEY_EXTRAYN
+  FROM MBTI_SURVEY
+  WHERE MBTI_SURVEY_EXTRAYN = 'N'
+ </select>
+ 
+  <select id="getMbtiSurvey" resultMap="mbtiSurveyMap" parameterClass="String">
+  SELECT MBTI_SURVEY_NUMBER, 
+		 MBTI_SURVEY_CONTENT, 
+		 MBTI_SURVEY_TYPE, 
+		 MBTI_SURVEY_EXTRAYN
+  FROM MBTI_SURVEY
+  WHERE MBTI_SURVEY_NUMBER = #mbtiSurveyNumber#
+ </select>
+ 
+ </sqlMap>

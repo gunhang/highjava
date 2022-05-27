@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="blacklist">
+<!--  
+	이 영역에 SQL 문에 맞는 태그를 사용하여 SQL문을 작성한다.
+	
+	사용할 수 있는 기본적인 태그들 
+	<select> ~~~ </select>
+	<insert> ~~~ </insert>
+	<update> ~~~ </update>
+	<delete> ~~~ </delete>
+
+	위 태그에서 사용되는 속성들
+	
+	1) id속성 : 해당 태그를 호출할 때 <sqlMap>태그의 namespace와 연결하여
+			     사용하는 이름.
+	2) parameterClass 속성: SQL문에 사용될 데이터가 들어있는 객체를 지정한다.
+						(보통 VO클래스, 자바의 자료형이름 등이 사용된다.)
+						(typeAlias로 지정한 alias명을 사용할 수 있다.)
+	3) resultClass속성 : select문을 실행한 결과를 담을 객체를 지정한다.
+						(보통 VO클래스나 자바의 자료형이름을 사용한다.)
+	4) resultMap속성 : 결과 레코드 컬럼명과 VO객체의 property명이 다를 경우 에
+	                                 적절한 매핑을	위해 사용한다.
+	                                 
+-->	
+	
+ <insert id="insertBlacklist" parameterClass="spectrum.blacklist.vo.BlacklistVO">
+
+	INSERT INTO BLACKLIST 
+	(BLACKLIST_NUMBER, MEMBER_ID, BLACKLIST_REASON, BLACKLIST_RELEASEDATE, BLACKLIST_BLACKYN, BLACKLIST_RGSTRDATE, BLACKLIST_CHECK)
+	VALUES (SEQ_ID.NEXTVAL, #memberId#, #blacklistReason#, TO_CHAR(SYSDATE+7,'YYYYMMDD'), 'Y', SYSDATE, 'N')
+	
+</insert>
+ <insert id="insertBlacklistAuto" >
+
+	INSERT INTO BLACKLIST 
+	(BLACKLIST_NUMBER, MEMBER_ID, BLACKLIST_REASON, BLACKLIST_RELEASEDATE, BLACKLIST_BLACKYN, BLACKLIST_RGSTRDATE, BLACKLIST_CHECK)
+	VALUES (SEQ_ID.NEXTVAL, #memberId#, '유저신고가 5번 이상 들어와서 블랙리스트로 추가', TO_CHAR(SYSDATE+7,'YYYYMMDD'), 'Y', SYSDATE, 'Y')
+	
+</insert>
+<!--
+<update id="updateMember" parameterClass="kr.or.ddit.member.vo.MemberVO">
+					 UPDATE mymember 
+					 SET  mem_name = #memName# 
+					 ,mem_tel = #memTel# 
+				     ,mem_addr = #memAddr#
+				     ,atch_file_id = #atchFileId#
+				     WHERE mem_id = #memId#
+</update>
+-->
+<delete id="deleteBlacklist" parameterClass="String">
+
+	 UPDATE BLACKLIST
+					 SET  BLACKLIST_BLACKYN = 'N' 
+					
+				     WHERE BLACKLIST_NUMBER = #blacklistNumber#
+	
+	
+</delete> 
+<delete id="insertBlacklistAutoBanDuplication" parameterClass="String">
+
+	 UPDATE BLACKLIST
+					 SET  BLACKLIST_CHECK = 'Y'
+					
+				     WHERE MEMBER_ID = #memberId#
+	
+	
+</delete> 
+
+
+<resultMap id="blacklistMap" class="spectrum.blacklist.vo.BlacklistVO">
+	
+	<result property="blacklistNumber" column="BLACKLIST_NUMBER"/>
+	<result property="memberId" column="MEMBER_ID"/>
+	<result property="blacklistReason" column="BLACKLIST_REASON"/>
+	<result property="blacklistRgstrdate" column="BLACKLIST_RELEASEDATE"/>
+	<result property="blacklistBlackyn" column="BLACKLIST_BLACKYN"/>
+	<result property="blacklistReleasedate" column="BLACKLIST_RELEASEDATE"/>
+	<result property="blacklistCheck" column="BLACKLIST_CHECK"/>
+	
+</resultMap>
+<resultMap id="idMap" class="spectrum.blacklist.vo.BlacklistVO">
+	
+	
+	<result property="memberId" column="MEMBER_ID"/>
+	
+</resultMap>
+
+
+<select id="getMemberlistAll" resultMap="idMap">
+
+	select MEMBER_ID
+		  from MEMBER
+</select>
+
+
+<select id="getBlacklistAll" resultMap="blacklistMap">
+
+	select *
+		  from BLACKLIST
+</select>
+
+ <select id="getBlacklist"  resultMap="blacklistMap">   
+
+	select *
+		  from BLACKLIST where BLACKLIST_NUMBER = #blacklistNumber#
+
+</select>
+
+ <select id="getReportcount" parameterClass="String" resultClass="java.lang.Integer">   
+
+	SELECT MEMBER_REPORTCOUNT
+    from member
+    where MEMBER_ID = #memberId#
+    
+</select>
+
+ <select id="getMemberSigndate" parameterClass="String" resultClass="java.lang.String">   
+
+	SELECT MEMBER_SIGNDATE
+    from member
+    where MEMBER_ID = #memberId#
+    
+</select>
+
+ <select id="gettoBlacklistCheck" parameterClass="String" resultClass="java.lang.String">   
+
+	SELECT BLACKLIST_CHECK
+    from BLACKLIST
+    where MEMBER_ID = #memberId#
+    
+</select>
+
+
+
+<!--
+<select id="checkMember" parameterClass="String" resultClass="int">
+ 	select count(*) as cnt from mymember 
+					 where mem_id = #memId#
+</select>
+
+<select id="searchMember" parameterClass="memVO" resultMap="memMap">
+
+		select * from mymember
+		where 1=1
+		<isNotEmpty property="memId">
+            and mem_id = #memId# 
+		</isNotEmpty>
+        
+		<isNotEmpty property="memName">
+            and mem_name = #memName# 
+		</isNotEmpty>
+        
+		<isNotEmpty property="memTel">
+            and mem_tel = #memTel# 
+		</isNotEmpty>
+        
+		<isNotEmpty property="memAddr">
+            and mem_addr like '%' || #memAddr# || '%' 
+		</isNotEmpty>
+
+</select>
+ -->
+<!-- <select id="getMemberAll" resultClass="kr.or.ddit.member.vo.MemberVO"> -->
+<!--    select mem_id as memId ibatis가 알아먹을수 있는 이름으로 바꿔줌 VO내 이름 (result class일때) -->
+<!--          ,mem_name as memName -->
+<!--          ,mem_tel as memTel -->
+<!--          ,mem_addr as memAddr -->
+<!--      from mymember -->	
+</sqlMap>			
+
+
+
+
+
+

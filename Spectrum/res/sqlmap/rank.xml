@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="rank">
+<!--  
+	이 영역에 SQL 문에 맞는 태그를 사용하여 SQL문을 작성한다.
+	
+	사용할 수 있는 기본적인 태그들 
+	<select> ~~~ </select>
+	<insert> ~~~ </insert>
+	<update> ~~~ </update>
+	<delete> ~~~ </delete>
+
+	위 태그에서 사용되는 속성들
+	
+	1) id속성 : 해당 태그를 호출할 때 <sqlMap>태그의 namespace와 연결하여
+			     사용하는 이름.
+	2) parameterClass 속성: SQL문에 사용될 데이터가 들어있는 객체를 지정한다.
+						(보통 VO클래스, 자바의 자료형이름 등이 사용된다.)
+						(typeAlias로 지정한 alias명을 사용할 수 있다.)
+	3) resultClass속성 : select문을 실행한 결과를 담을 객체를 지정한다.
+						(보통 VO클래스나 자바의 자료형이름을 사용한다.)
+	4) resultMap속성 : 결과 레코드 컬럼명과 VO객체의 property명이 다를 경우 에
+	                                 적절한 매핑을	위해 사용한다.
+	                                 
+-->	
+	
+<!-- <insert id="insertMember" parameterClass="kr.or.ddit.member.vo.MemberVO">
+
+	INSERT INTO mymember 
+	(mem_id, mem_name, mem_tel, mem_addr, atch_file_id)
+	VALUES (#memId#, #memName#, #memTel#, #memAddr#, #atchFileId#)
+	
+</insert>
+<update id="updateMember" parameterClass="kr.or.ddit.member.vo.MemberVO">
+					 UPDATE mymember 
+					 SET  mem_name = #memName# 
+					 ,mem_tel = #memTel# 
+				     ,mem_addr = #memAddr#
+				     ,atch_file_id = #atchFileId#
+				     WHERE mem_id = #memId#
+</update>
+<delete id="deleteMember" parameterClass="String">
+
+	delete from mymember where mem_id = #memId#
+	
+	
+</delete>
+ -->
+<resultMap id="rankbMap" class="spectrum.rank.vo.RankVO">
+	<result property="memberId" column="member_id"/>
+	<result property="rankMemrank" column="rank_memrank"/>
+	<result property="memberWithdrawalyn" column="member_withdrawalyn"/>
+	<result property="memberSigndate" column="member_signdate"/>
+	<result property="memberHartnum" column="member_hartnum"/>
+	<result property="rankBenefit" column="rank_benefit"/>
+</resultMap>
+
+<resultMap id="rankMap" class="spectrum.rank.vo.RankVO">
+	<result property="memberId" column="member_id"/>
+	<result property="rankMemrank" column="rank_memrank"/>
+</resultMap>
+	
+<resultMap id="rankcMap" class="spectrum.rank.vo.RankVO">
+	<result property="memberId" column="member_id"/>
+</resultMap>
+
+
+ <resultMap id="timeMap" class="spectrum.rank.vo.RankVO">
+	<result property="memberId" column="member_id"/>
+	<result property="rankBenefit" column="rank_benefit"/>
+	
+	
+
+</resultMap>
+
+<update id="updateRankMember" parameterClass="spectrum.rank.vo.RankVO">
+					 UPDATE rank
+					 SET  rank_memrank = #rankMemrank# 
+				
+				     WHERE member_id = #memberId#
+</update>
+<update id="updateRankBenfit">
+				       
+         UPDATE rank
+            SET  rank_benefit = (select TO_CHAR((ADD_MONTHS(MEMBER_SIGNDATE,+3)),'YYYYMMDD')
+                                from member A, RANK B 
+                                where  A.MEMBER_ID = B.MEMBER_ID
+                                AND B.MEMBER_ID = #memberId# )
+                             
+        where MEMBER_ID = #memberId#
+        
+</update>
+<update id="updateRankBenfitAfter">
+				       
+         UPDATE rank
+            SET  rank_benefit = (select TO_CHAR((ADD_MONTHS(RANK_BENEFIT,+3)),'YYYYMMDD')
+                                from member A, RANK B 
+                                where  A.MEMBER_ID = B.MEMBER_ID
+                                AND B.MEMBER_ID = #memberId# )
+                           
+        where MEMBER_ID = #memberId#
+        
+</update>
+
+<update id="updateHeartWhiteMember">
+					 UPDATE MEMBER
+ 					SET MEMBER_HARTNUM = TO_NUMBER((select MEMBER_HARTNUM
+                    						from member
+                   							where MEMBER_ID = #memberId#) ) + 6 
+                   							
+    				WHERE member_id = #memberId#
+</update>
+<update id="updateHeartYellowMember">
+					 UPDATE MEMBER
+ 					SET MEMBER_HARTNUM = TO_NUMBER((select MEMBER_HARTNUM
+                    						from member
+                   							where MEMBER_ID = #memberId#) ) + 11
+    				WHERE member_id = #memberId#
+</update>
+<update id="updateHeartPurpleMember">
+					 UPDATE MEMBER
+ 					SET MEMBER_HARTNUM = TO_NUMBER((select MEMBER_HARTNUM
+                    						from member
+                   							where MEMBER_ID = #memberId#) ) + 16
+    				WHERE member_id = #memberId#
+</update>
+<update id="updateHeartRainbowMember">
+					 UPDATE MEMBER
+ 					SET MEMBER_HARTNUM = TO_NUMBER((select MEMBER_HARTNUM
+                    						from member
+                   							where MEMBER_ID = #memberId#) ) + 21
+    				WHERE member_id = #memberId#
+</update>
+<update id="updateGear">
+					 UPDATE rank
+ 					SET RANK_GEAR = 'Y'
+    				WHERE member_id = #memberId#
+</update>
+
+<update id="updateRankYellow">
+					 UPDATE rank
+ 					SET RANK_MEMRANK = 'YELLOW'
+    				WHERE member_id = #memberId#
+</update>
+
+<update id="updateRankPurple">
+					 UPDATE rank
+ 					SET RANK_MEMRANK = 'PURPLE'
+    				WHERE member_id = #memberId#
+</update>
+
+<update id="updateRankRainbow">
+					 UPDATE rank
+ 					SET RANK_MEMRANK = 'RAINBOW'
+    				WHERE member_id = #memberId#
+</update>
+
+
+
+
+ <select id="getALLMemberWhiteList" resultMap="rankbMap">
+          
+          select B.MEMBER_WITHDRAWALYN,
+          		 B.MEMBER_SIGNDATE,
+          		 B.MEMBER_HARTNUM,
+                A.MEMBER_ID,
+                A.RANK_MEMRANK,
+                A.RANK_BENEFIT
+                FROM RANK A, MEMBER B
+                WHERE A.MEMBER_ID = B.MEMBER_ID
+</select>
+ <select id="getRankMember" resultMap="rankMap">
+          
+       select *
+		  from RANK where MEMBER_ID = #memberId#
+</select>
+ <select id="getTimeRankMember" resultMap="timeMap">
+    	select rank_benefit
+    	from rank 
+    	where member_id = #memberId#
+</select>
+
+ <select id="getTotalPayment" resultClass="String">
+   SELECT MAX(PAYMENT_TOTALAMOUNT)
+    FROM PAYMENT
+    WHERE MEMBER_ID = #memberId#
+
+</select>
+
+
+
+
+
+
+<!--  <select id="getALLMemberWhiteList2" resultMap="rankMap">
+
+	select *
+		  from rank
+	 
+</select> -->
+
+
+
+<!--
+<select id="getMember" parameterClass="String" resultMap="memMap">   파라미터 클래스는 생략가능
+
+	select *
+		  from mymember where mem_id = #memId#
+
+</select>
+
+<select id="checkMember" parameterClass="String" resultClass="int">
+ 	select count(*) as cnt from mymember 
+					 where mem_id = #memId#
+</select>
+
+<select id="searchMember" parameterClass="memVO" resultMap="memMap">
+
+		select * from mymember
+		where 1=1
+		<isNotEmpty property="memId">
+            and mem_id = #memId# 
+		</isNotEmpty>
+        
+		<isNotEmpty property="memName">
+            and mem_name = #memName# 
+		</isNotEmpty>
+        
+		<isNotEmpty property="memTel">
+            and mem_tel = #memTel# 
+		</isNotEmpty>
+        
+		<isNotEmpty property="memAddr">
+            and mem_addr like '%' || #memAddr# || '%' 
+		</isNotEmpty>
+
+</select>
+ -->
+<!-- <select id="getMemberAll" resultClass="kr.or.ddit.member.vo.MemberVO"> -->
+<!--    select mem_id as memId ibatis가 알아먹을수 있는 이름으로 바꿔줌 VO내 이름 (result class일때) -->
+<!--          ,mem_name as memName -->
+<!--          ,mem_tel as memTel -->
+<!--          ,mem_addr as memAddr -->
+<!--      from mymember -->	
+
+</sqlMap>			
+
+
+
+
+
+
+

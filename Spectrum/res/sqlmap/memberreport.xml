@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="memberreport">
+
+
+<select id="check"  parameterClass="spectrum.myspectrum.report.vo.MemberReportVO" resultClass="String">
+	select count(*)
+	  from member_report
+	 where member_reported_id ||''|| member_report_id =#memberReportedId# ||''|| #memberReportId#
+	   
+
+</select>
+<insert id="reportinsert" parameterClass="spectrum.myspectrum.report.vo.MemberReportVO">
+	insert into member_report
+	(
+	MEMBER_REPORT_NUM,
+	MEMBER_REPORTED_ID,
+	MEMBER_REPORT_ID,
+	MEMBER_REPORT_DATE,
+	MEMBER_REPORT_REASON    
+	)values(
+	 to_char(MEMBERREPORT_SEQ.nextval),            
+	 #memberReportedId#,           
+	 #memberReportId#,            
+	 sysdate,   
+	 #memberReportReason#               
+	)       
+</insert>
+<select id="count" parameterClass="String" resultClass="String">
+	select count(*)
+	  from member_report
+     where MEMBER_REPORTED_ID=#memberReportedId#
+
+</select>
+
+<update id="boardreportnum" parameterClass="spectrum.member.vo.MemberVO">
+	update member
+     
+       set MEMBER_REPORTCOUNT=#memberReportcount#  
+	 where MEMBER_ID=#memberId#
+	 
+	 
+</update>
+
+
+
+
+
+
+</sqlMap>

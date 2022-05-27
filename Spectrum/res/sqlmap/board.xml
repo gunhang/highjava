@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+			PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+			"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="board">
+<!--  
+	이 영역에 SQL 문에 맞는 태그를 사용하여 SQL문을 작성한다.
+	
+	사용할 수 있는 기본적인 태그들 
+	<select> ~~~ </select>
+	<insert> ~~~ </insert>
+	<update> ~~~ </update>
+	<delete> ~~~ </delete>
+
+	위 태그에서 사용되는 속성들
+	
+	1) id속성 : 해당 태그를 호출할 때 <sqlMap>태그의 namespace와 연결하여
+			     사용하는 이름.
+	2) parameterClass 속성: SQL문에 사용될 데이터가 들어있는 객체를 지정한다.
+						(보통 VO클래스, 자바의 자료형이름 등이 사용된다.)
+						(typeAlias로 지정한 alias명을 사용할 수 있다.)
+	3) resultClass속성 : select문을 실행한 결과를 담을 객체를 지정한다.
+						(보통 VO클래스나 자바의 자료형이름을 사용한다.)
+	4) resultMap속성 : 결과 레코드 컬럼명과 VO객체의 property명이 다를 경우 에
+	                                 적절한 매핑을	위해 사용한다.
+	                                 
+-->	
+	
+<insert id="insertBoard" parameterClass="spectrum.board.vo.NoticeBoardVO">
+
+	INSERT INTO noticeboard 
+	(noticeboard_num, noticeboard_title, noticeboard_date, admin_id, noticeboard_type, noticeboard_content)
+	VALUES (board_seq.nextval, #noticeboardTitle#, sysdate, #adminId#, #noticeboardType#, #noticeboardContent#)
+	
+</insert>
+
+<insert id="insertQuestionBoard" parameterClass="spectrum.board.vo.QuestionBoardVO">
+
+	INSERT INTO questionboard 
+	(QUESTIONBOARD_NUMBER, MEMBER_ID, QUESTIONBOARD_TITLE, QUESTIONBOARD_DATE,QUESTIONBOARD_ANSWERYN, QUESTIONBOARD_CONTENT)
+	VALUES (questionboard_seq.nextval, #memberId#, #questionboardTitle#, sysdate, 'N', #questionboardContent#)
+	
+</insert>
+ <insert id="insertQuestionAnswerBoard" parameterClass="spectrum.board.vo.QuestionAnswerBoardVO">
+
+	INSERT INTO question_answerboard 
+	(QUESTIONBOARD_NUM,QUESTIONANSWERBOARD_NUM, ADMIN_ID, QSTN_ANSBRD_CN)
+	VALUES (#questionboardNum#,questionanswerboard_seq.nextval, #adminId#, #qstn_ansbrdCn#)
+	
+	
+</insert>
+
+ <update id="insertQuestionAnswerBoard2" parameterClass="spectrum.board.vo.QuestionAnswerBoardVO">
+	UPDATE QUESTIONBOARD
+	SET questionboard_answeryn = 'Y'
+	WHERE questionboard_number = #questionboardNum#
+</update>  
+
+<update id="updateBoard" parameterClass="spectrum.board.vo.NoticeBoardVO">
+					 UPDATE NOTICEBOARD
+					 SET  noticeboard_type = #noticeboardType#
+					 ,noticeboard_title = #noticeboardTitle# 
+					 ,noticeboard_date = sysdate 
+					 ,noticeboard_content = #noticeboardContent#
+				
+				     WHERE noticeboard_num = #noticeboardNum#
+</update>
+
+<update id="updateQuestionBoard" parameterClass="spectrum.board.vo.QuestionBoardVO">
+					 UPDATE questionboard
+					 SET  questionboard_title = #questionboardTitle# 
+					 ,questionboard_date = sysdate 
+					 ,questionboard_content = #questionboardContent#
+				
+				     WHERE questionboard_number = #questionboardNumber#
+</update>
+<update id="updateQuestionAnswerBoard" parameterClass="spectrum.board.vo.QuestionAnswerBoardVO">
+					 UPDATE question_answerboard
+					 SET  qstn_ansbrd_cn = #qstn_ansbrdCn# 
+		
+				     WHERE questionboard_num = #questionboardNum#
+</update>
+
+<delete id="deleteBoard" parameterClass="String">
+
+	delete from noticeboard where noticeboard_num = #noticeboardNum#
+	
+	
+</delete>
+<delete id="deleteQuestionBoard" parameterClass="String">
+
+	delete from question_answerboard where questionboard_num = #questionboardNumber#
+	
+	
+</delete>
+<update id="deleteQuestionBoard2" parameterClass="String">
+
+	UPDATE QUESTIONBOARD
+	SET questionboard_answeryn = 'Y'
+	WHERE questionboard_number = #questionboardNumber#
+	
+</update>
+<delete id="deleteQuestionBoard3" parameterClass="String">
+
+	delete from questionboard where questionboard_number = #questionboardNumber#
+	
+	
+</delete>
+
+
+<delete id="deleteQuestionAnswerBoard" parameterClass="String">
+
+	delete from question_answerboard where questionboard_num = #questionboardNumber#
+	
+	
+</delete>
+<update id="deleteQuestionAnswerBoard2" parameterClass="String">
+
+	UPDATE QUESTIONBOARD
+	SET questionboard_answeryn = 'N'
+	WHERE questionboard_number = #questionboardNumber#
+	
+</update>
+
+
+<resultMap id="boardMap" class="spectrum.board.vo.NoticeBoardVO">
+	<result property="noticeboardNum" column="noticeboard_num"/>
+	<result property="noticeboardTitle" column="noticeboard_title"/>
+	<result property="noticeboardDate" column="noticeboard_date"/>
+	<result property="adminId" column="admin_id"/>
+	<result property="noticeboardType" column="noticeboard_type"/>
+	<result property="noticeboardContent" column="noticeboard_content"/>
+	
+</resultMap>
+
+
+<resultMap id="questionboardMap" class="spectrum.board.vo.QuestionBoardVO">
+	<result property="questionboardNumber" column="questionboard_number"/>
+	<result property="memberId" column="member_id"/>
+	<result property="questionboardTitle" column="questionboard_title"/>
+	<result property="questionboardContent" column="questionboard_content"/>
+	<result property="questionboardDate" column="questionboard_date"/>
+	<result property="questionboardAnsweryn" column="questionboard_answeryn"/>
+	
+</resultMap>
+<resultMap id="questionAnswerboardMap" class="spectrum.board.vo.QuestionAnswerBoardVO">
+	<result property="questionboardNum" column="questionboard_num"/>
+	<result property="adminId" column="admin_id"/>
+	<result property="qstn_ansbrdCn" column="qstn_ansbrd_cn"/>
+	<result property="questionAnswerboardNum" column="questionanswerboard_num"/>
+	
+</resultMap>
+
+
+<select id="getBoardAll" resultMap="boardMap">
+
+	select noticeboard_num,
+			noticeboard_title,
+			noticeboard_date,
+			admin_id,
+			noticeboard_type,
+			noticeboard_content
+		  from noticeboard
+		  order by noticeboard_num
+</select>
+<select id="getQuestionBoardAll" resultMap="questionboardMap">
+
+	select questionboard_number,
+			member_id,
+			questionboard_title,
+			questionboard_content,
+			questionboard_date,
+			questionboard_answeryn
+		  from questionboard
+		  order by questionboard_number
+</select>
+
+<select id="getBoard" parameterClass="String" resultMap="boardMap">   <!-- 파라미터 클래스는 생략가능 -->
+
+	select *
+		  from noticeboard where noticeboard_num = #NoticeboardNum#
+
+</select>
+
+<select id="getQuestionBoard" parameterClass="String" resultMap="questionboardMap">   <!-- 파라미터 클래스는 생략가능 -->
+
+	select *
+		  from questionboard where questionboard_number = #questionboardNumber#
+
+</select>
+
+<select id="getQuestionAnswerBoard" parameterClass="String" resultMap="questionAnswerboardMap">   <!-- 파라미터 클래스는 생략가능 -->
+
+			select *
+		  		from question_answerboard where questionboard_num = #questionboardNum#
+
+</select>
+
+
+
+
+
+
+<!-- <select id="getMemberAll" resultClass="kr.or.ddit.member.vo.MemberVO"> -->
+<!--    select mem_id as memId ibatis가 알아먹을수 있는 이름으로 바꿔줌 VO내 이름 (result class일때) -->
+<!--          ,mem_name as memName -->
+<!--          ,mem_tel as memTel -->
+<!--          ,mem_addr as memAddr -->
+<!--      from mymember -->	
+</sqlMap>			
+
+
+
+
+
+

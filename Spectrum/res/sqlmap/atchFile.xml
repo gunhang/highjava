@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+         PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+         "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="atchFile">
+
+   <resultMap class="spectrum.myspectrum.vo.SpectrumAttachFileVO" id="atchFileDetailMap">
+     <result property="spctatcId"    column="SPCTATC_ID"/>
+     <result property="spctatcdtlNum"    column="SPCTATCDTL_NUM"/>
+     <result property="spctatcdtlPath"    column="SPCTATCDTL_PATH"/>
+     <result property="spctatcdtlOriginalname"    column="SPCTATCDTL_ORIGINALNAME"/>
+     <result property="spctatcdtlType"    column="SPCTATCDTL_TYPE"/>
+     <result property="spctatcdtlSize"    column="SPCTATCDTL_SIZE"/>
+     <result property="spctatcdtlExtension"    column="SPCTATCDTL_EXTENSION"/>
+     <result property="spctatcdtlContent"    column="SPCTATCDTL_CONTENT"/>
+   </resultMap>
+
+   <select id="getAtchFileList" parameterClass="spectrum.myspectrum.vo.SpectrumAttachFileVO" resultMap="atchFileDetailMap">
+      select * from spctratcdtl
+      where spctatc_id = #spctatcId#
+   </select>
+
+   <select id="getAtchFileDetail" parameterClass="spectrum.myspectrum.vo.SpectrumAttachFileVO" resultMap="atchFileDetailMap">
+      select * from spctratcdtl
+      where spctatc_id = #spctatcId#
+        and spctatcdtl_num = #spctatcdtlNum#
+   </select>
+   
+   <insert id="insertAtchFile" parameterClass="spectrum.myspectrum.vo.SpectrumAttachFileVO">
+      <selectKey keyProperty="spctatcId" resultClass="long">
+         select SPCTATCID_SEQ.nextval from dual
+      </selectKey>
+   
+      insert into spectrum_attachment
+      (
+      SPCTATC_ID,
+      SPCTATC_DATE,
+      SPCTATC_USEYN
+      )
+      values 
+      (
+      #spctatcId#,
+      sysdate,
+      'Y'
+      )
+   </insert>
+   
+   <insert id="insertAtchFileDetail" parameterClass="spectrum.myspectrum.vo.SpectrumAttachFileVO">
+      insert into spctratcdtl
+      (
+       SPCTATC_ID,
+       SPCTATCDTL_NUM,
+       SPCTATCDTL_PATH,
+      SPCTATCDTL_TYPE,
+       SPCTATCDTL_ORIGINALNAME,
+        SPCTATCDTL_CONTENT,
+       SPCTATCDTL_EXTENSION,
+        SPCTATCDTL_SIZE
+      )
+      values
+      (
+      #spctatcId#,
+      (select nvl(max(spctatcdtl_num), 0) +1
+         from spctratcdtl
+        where spctatc_id = #spctatcId#),
+        #spctatcdtlPath#,
+        #spctatcdtlType#,
+        #spctatcdtlOriginalname#,
+        #spctatcdtlContent#,
+         #spctatcdtlExtension#,
+        #spctatcdtlSize#
+      )
+   </insert>
+   <resultMap class="spectrum.myspectrum.vo.SpectrumAttachFileVO" id="filepathMap">
+   		<result property="spctatcdtlType"   column="SPCTATCDTL_TYPE"/>
+   		<result property="spctatcdtlExtension"   column="SPCTATCDTL_EXTENSION" />
+   
+   </resultMap>
+   
+   
+   
+   <select id = "filePath" parameterClass="long" resultMap ="filepathMap" >
+   		select SPCTATCDTL_TYPE,
+   			SPCTATCDTL_EXTENSION	   
+   		  from SPCTRATCDTL
+   		 where SPCTATC_ID=#spctatcId# 
+   
+   </select>
+   
+
+
+
+
+</sqlMap>
